@@ -6,7 +6,7 @@ typedef struct hashTable *hashTableP;
 
 struct hashTable
 {
-    char key[50];
+    char Word[50];
     int Frequency;
     int status; // Empty -> 0, Occupied -> 1, Deleted -> -1
 };
@@ -40,9 +40,9 @@ int main()
     if( index == -1){
         printf("\nThe hash table is empty\n\n");
     } else if (index == -2){
-        printf("\nThe key you entered not found!\n\n");
+        printf("\nThe word you entered not found!\n\n");
     }else{
-        printf("\nIndex = %d | Key = %s | Frequency = %d \n\n", index, myTable[index].key, myTable[index].Frequency);
+        printf("\nIndex = %d | Word = %s | Frequency = %d \n\n", index, myTable[index].Word, myTable[index].Frequency);
     }
 
     //hashDisplay(myTable, TableSize);
@@ -64,21 +64,21 @@ void hashInitialize(hashTableP hashTable, int TableSize){
     }
 }
 
-//function to hash the key word
-int hashFunction(char* key, int TableSize){
+//function to hash the Word word
+int hashFunction(char* Word, int TableSize){
     long long int hashValue = 0;
 
-    while(*key != '\0'){
-        hashValue = (hashValue << 5) + *key++;
+    while(*Word != '\0'){
+        hashValue = (hashValue << 5) + *Word++;
     }
 
     return (hashValue % TableSize);
 }
 
-//function to insert a key to the double hash table
-void hashInsert(hashTableP hashTable, char* key, int TableSize){
+//function to insert a Word to the double hash table
+void hashInsert(hashTableP hashTable, char* Word, int TableSize){
 
-    int tempIndex = hashFunction(key, TableSize);
+    int tempIndex = hashFunction(Word, TableSize);
     int index = tempIndex;
     int i = 1;
 
@@ -89,7 +89,7 @@ void hashInsert(hashTableP hashTable, char* key, int TableSize){
 
     //go through the table until we reach an empty node
     while(hashTable[index].status == 1){
-        if(strcasecmp(hashTable[index].key, key) == 0){
+        if(strcasecmp(hashTable[index].Word, Word) == 0){
             hashTable[index].Frequency++;
             return;
         }
@@ -106,11 +106,11 @@ void hashInsert(hashTableP hashTable, char* key, int TableSize){
 
     //insert record into the table
     hashTable[index].status = 1;
-    strcpy(hashTable[index].key, key);
+    strcpy(hashTable[index].Word, Word);
     hashTable[index].Frequency = 1;
     currentTableSize++;
 
-    printf("\nThe key you entered has been inserted\n");
+    printf("\nThe word you entered has been inserted\n");
     //printf("Current Size = %d\n", currentTableSize);
 }
 
@@ -118,7 +118,7 @@ void hashInsert(hashTableP hashTable, char* key, int TableSize){
 void hashDisplay(hashTableP hashTable, int TableSize) {
     for (int i = 0; i < TableSize; i++) {
         if (hashTable[i].status == 1) {
-            printf("%d. Key = %s | Frequency = %d\n", i, hashTable[i].key, hashTable[i].Frequency);
+            printf("%d. Word = %s | Frequency = %d\n", i, hashTable[i].Word, hashTable[i].Frequency);
         } else if (hashTable[i].status == -1) {
             printf("%d. DELETED\n", i);
         } else {
@@ -127,10 +127,10 @@ void hashDisplay(hashTableP hashTable, int TableSize) {
     }
 }
 
-//function to search a key in the double hash table
-int hashSearch(hashTableP hashTable, char* key, int TableSize){
+//function to search a Word in the double hash table
+int hashSearch(hashTableP hashTable, char* Word, int TableSize){
 
-    int tempIndex = hashFunction(key, TableSize);
+    int tempIndex = hashFunction(Word, TableSize);
     int index = tempIndex;
     int i = 1;
 
@@ -140,7 +140,7 @@ int hashSearch(hashTableP hashTable, char* key, int TableSize){
 
     //go through the table until we reach an empty node
     while(hashTable[index].status != 0){
-        if(strcasecmp(hashTable[index].key, key) == 0 && hashTable[index].status == 1){
+        if(strcasecmp(hashTable[index].Word, Word) == 0 && hashTable[index].status == 1){
             return index;
         }
 
@@ -156,21 +156,21 @@ int hashSearch(hashTableP hashTable, char* key, int TableSize){
     return -2;
 }
 
-//function to delete a key from the double hash table
-void hashDelete(hashTableP hashTable, char* key, int TableSize){
+//function to delete a Word from the double hash table
+void hashDelete(hashTableP hashTable, char* Word, int TableSize){
 
 
-    int index = hashSearch(hashTable, key, TableSize);
+    int index = hashSearch(hashTable, Word, TableSize);
     if(index == -1){
         printf("\nThe hash table is empty\n\n");
 
     } else if (index == -2){
-        printf("\nThe key you entered not found!\n\n");
+        printf("\nThe word you entered not found!\n\n");
 
     }else{
 
         hashTable[index].status = -1;
         currentTableSize--;
-        printf("\nThe key you entered has been deleted!\n\n");
+        printf("\nThe word you entered has been deleted!\n\n");
     }
 }
