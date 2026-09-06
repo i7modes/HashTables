@@ -1,0 +1,74 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  ubuntu-gcc:
+    name: Ubuntu GCC & Valgrind
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Valgrind
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y valgrind
+
+      - name: Build & Run Tests
+        run: |
+          mkdir -p bin
+          make clean
+          make check
+
+      - name: Run Demo
+        run: |
+          make demo
+
+      - name: Valgrind Memory Safety Check
+        run: |
+          valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --error-exitcode=1 ./bin/test_runner
+          valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --error-exitcode=1 ./bin/demo
+
+  ubuntu-clang-asan:
+    name: Ubuntu Clang AddressSanitizer
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build with Clang ASan + UBSan
+        run: |
+          mkdir -p bin
+          clang -Wall -Wextra -Wpedantic -std=c99 -fsanitize=address,undefined -g -Iinclude src/hash_table.c tests/test_hash_table.c -o bin/test_runner_asan
+          clang -Wall -Wextra -Wpedantic -std=c99 -fsanitize=address,undefined -g -Iinclude src/hash_table.c examples/demo.c -o bin/demo_asan
+
+      - name: Run ASan Tests
+        run: |
+          ./bin/test_runner_asan
+
+      - name: Run ASan Demo
+        run: |
+          ./bin/demo_asan
+
+  windows-gcc:
+    name: Windows MinGW Build & Test
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build & Test (PowerShell)
+        run: |
+          New-Item -ItemType Directory -Force -Path bin
+          gcc -Wall -Wextra -Wpedantic -std=c99 -Iinclude src/hash_table.c tests/test_hash_table.c -o bin/test_runner.exe
+          gcc -Wall -Wextra -Wpedantic -std=c99 -Iinclude src/hash_table.c examples/demo.c -o bin/demo.exe
+          .\bin\test_runner.exe
+          .\bin\demo.exe
