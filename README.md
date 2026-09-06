@@ -12,7 +12,7 @@ A modular, production-grade **Double Hashing Hash Table** implemented in standar
 ## Features
 
 - **Double Hashing Collision Resolution**: Probe sequence $h(k, i) = (h_1(k) + i \cdot h_2(k)) \pmod M$ eliminates clustering entirely.
-- **Guaranteed Full Cycle**: Table capacity $M$ is always prime and step $h_2(k) \in [1, R]$ where $R = \text{prev\_prime}(M) < M$, mathematically guaranteeing $\gcd(h_2(k), M) = 1$ and a full permutation of slots.
+- **Guaranteed Full Cycle**: Table capacity $M$ is always prime and step $h_2(k) \in [1, R]$ (where $R < M$ is the preceding prime), mathematically guaranteeing $\gcd(h_2(k), M) = 1$ and a full permutation of slots.
 - **Tombstone Recycling**: Deletions place tombstone markers (`SLOT_DELETED`) that keep probe chains intact while being aggressively recycled during subsequent insertions.
 - **Dynamic Auto-Rehashing**: Expands capacity to the next prime when load factor exceeds 0.70, completely purging accumulated tombstones and restoring optimal $\mathcal{O}(1)$ performance.
 - **Case-Insensitive Option**: Built-in toggle for case-folding word frequency analysis and dictionary lookups.
